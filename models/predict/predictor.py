@@ -33,8 +33,7 @@ class RecognizeService(object):
         Args:
             input (array-like object): 推論を行う対象の特徴量データ"""
         interpreter = cls.get_model()
-        print(interpreter)
-        return cls.predictor.predict(image_path, interpreter)
+        return cls.predictor.predict(interpreter, image_path)
 
 
 @app.route("/ping", methods=["GET"])
@@ -68,8 +67,14 @@ def transformation():
         )
 
     # 推論実行
-    _, _, a_list, b_list = RecognizeService.predict("input.jpg")
+    _, pred_bbox = RecognizeService.predict("input.jpg")
 
     # レスポンスを返す
-    result = json.dumps({"a_list": a_list, "b_list": b_list})
+
+    result = json.dumps({
+        "boxes": pred_bbox[0].tolist(),
+        "scores": pred_bbox[1].tolist(),
+        "classes": pred_bbox[2].tolist(),
+        "valid_detections": pred_bbox[3].tolist()
+    })
     return flask.Response(response=result, status=200, mimetype="text/json")

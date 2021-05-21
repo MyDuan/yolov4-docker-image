@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 import random
 import os
+import colorsys
 
 
 class YoloV4:
@@ -12,7 +13,7 @@ class YoloV4:
         self.input_size = input_size
         self.score = score
         self.iou = iou
-        self.class_file_name = 'classes'
+        self.class_file_name = 'algorithm/classes'
 
     def _boxes_filter(self, box_xywh, scores, input_shape=tf.constant([416, 416])):
         # filtered_scores = tf.where(list(zip(list(scores[0][:, 0] >= 0.4), list(scores[0][:, 1] >= 0.4))), scores[0], [[0, 0]])
@@ -59,36 +60,29 @@ class YoloV4:
 
     def _draw_bbox(self, image, bboxes, show_label=True):
         classes = self._read_class_names()
-        print(classes)
         num_classes = len(classes)
         image_h, image_w, _ = image.shape
         hsv_tuples = [(1.0 * x / num_classes, 1.0, 1.0) for x in range(num_classes)]
-        # colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
-        # colors = list(map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors))
+        colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
+        colors = list(map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors))
 
         random.seed(0)
-        # random.shuffle(colors)
+        random.shuffle(colors)
         random.seed(None)
 
         out_boxes, out_scores, out_classes, num_boxes = bboxes
-        ok_num = 0
-        key_points = []
         for i in range(num_boxes[0]):
             if int(out_classes[0][i]) < 0 or int(out_classes[0][i]) > num_classes:
                 continue
+            class_ind = int(out_classes[0][i])
             score = out_scores[0][i]
             coor = out_boxes[0][i]
             coor[0] = int(coor[0] * image_h)
             coor[2] = int(coor[2] * image_h)
             coor[1] = int(coor[1] * image_w)
             coor[3] = int(coor[3] * image_w)
-            a = max(abs(coor[3] - coor[1]), abs(coor[2] - coor[0]))
-            b = min(abs(coor[3] - coor[1]), abs(coor[2] - coor[0]))
-            if int(out_classes[0][i]) == 0 and score >= 0.8:
-                key_points.append(coor)
-                bbox_color = (0, 255, 0)
-            else:
-                bbox_color = (255, 0, 0)
+
+            bbox_color = colors[class_ind]
             fontScale = 0.5
             class_ind = int(out_classes[0][i])
             bbox_thick = int(0.6 * (image_h + image_w) / 600)
@@ -96,11 +90,7 @@ class YoloV4:
             cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
 
             if show_label:
-                if score >= 0.8:
-                    bbox_mess = "%s: %.2f" % (
-                        classes[class_ind],
-                        score,
-                    )
+                bbox_mess = "%s: %.2f" % (classes[class_ind],score)
                 t_size = cv2.getTextSize(
                     bbox_mess, 0, fontScale, thickness=bbox_thick // 2
                 )[0]
@@ -119,9 +109,9 @@ class YoloV4:
                     bbox_thick // 2,
                     lineType=cv2.LINE_AA,
                 )
-        return image, key_points
+        return image
 
-    def _fit_and_mark(self, interpreter, image_path):
+    def _detect_and_mark(self, interpreter, image_path):
         original_image = cv2.imread(image_path)
         original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
 
@@ -166,14 +156,13 @@ class YoloV4:
             classes.numpy(),
             valid_detections.numpy(),
         ]
-        print(pred_bbox)
-        image, key_points = self._draw_bbox(original_image, pred_bbox)
+        image = self._draw_bbox(original_image, pred_bbox)
         image = Image.fromarray(image.astype(np.uint8))
-        return key_points, cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+        return cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR), pred_bbox
 
     def predict(self, interpreter, image_path):
-        key_points, scr_output = self._fit_and_mark(interpreter, image_path)
-        return scr_output, key_points
+        scr_output, pred_bbox = self._detect_and_mark(interpreter, image_path)
+        return scr_output, pred_bbox
 
     def load_model(self):
         if not os.path.exists(self.model_path):
@@ -181,16 +170,4 @@ class YoloV4:
         interpreter = tf.lite.Interpreter(model_path=self.model_path)
         interpreter.allocate_tensors()
         return interpreter
-
-if __name__ == '__main__':
-    print("--------start----------")
-    predictor = YoloV4(model_path="../model/yolov4-416.tflite")
-    print("--------clasess----------")
-    model = predictor.load_model()
-    scr_output, key_points = predictor.predict(model, 'test.jpg')
-    print("--------key----------")
-    print(key_points)
-    cv2.imshow("result", scr_output)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
