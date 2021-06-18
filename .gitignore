@@ -1,2 +1,9 @@
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
 models/predict/model/*
 models/predict/test.jpg
