@@ -20,12 +20,14 @@
 - s3 bucket:
   -  $ terraform apply \`cat s3.tf | terraform fmt - | grep -E 'resource |module ' | tr -d '"' | awk '{printf("-target=%s.%s ",$2,$3);}'\`
 - ecr 
-  -  $ terraform plan \`cat ecr.tf | terraform fmt - | grep -E 'resource |module ' | tr -d '"' | awk '{printf("-target=%s.%s ",$2,$3);}'\`
+  -  $ terraform apply \`cat ecr.tf | terraform fmt - | grep -E 'resource |module ' | tr -d '"' | awk '{printf("-target=%s.%s ",$2,$3);}'\`
 - iam role 
-  -  $ terraform plan \`cat iam.tf | terraform fmt - | grep -E 'resource |module ' | tr -d '"' | awk '{printf("-target=%s.%s ",$2,$3);}'\`
+  -  $ terraform apply \`cat iam.tf | terraform fmt - | grep -E 'resource |module ' | tr -d '"' | awk '{printf("-target=%s.%s ",$2,$3);}'\`
 - upload your model file to s3
 - `$cd ../models/predict`
 - push your docker images to ecr
     - `. build_and_push_to_ecr.sh {your account id}`
+- sagemaker endpoint:
+  -  $ terraform apply \`cat sagemaker.tf | terraform fmt - | grep -E 'resource |module ' | tr -d '"' | awk '{printf("-target=%s.%s ",$2,$3);}'\`
 - test endpoint
     - `python test_sagemaker_endpoint.py`
