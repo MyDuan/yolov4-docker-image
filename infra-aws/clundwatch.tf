@@ -61,5 +61,5 @@ resource "aws_lambda_permission" "image-upload-lambda" {
    action        = "lambda:InvokeFunction"
    function_name = aws_lambda_function.image-upload-lambda.function_name
    principal     = "events.amazonaws.com"
-   source_arn    = aws_lambda_function.image-upload-event-rule.arn
+   source_arn    = aws_cloudwatch_event_rule.image-upload-event-rule.arn
 }
