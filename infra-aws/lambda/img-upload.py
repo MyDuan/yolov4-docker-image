@@ -1,4 +1,5 @@
 import boto3
+import json
 
 
 def handler(event, context):
@@ -21,5 +22,10 @@ def handler(event, context):
         Accept="image/jpeg",
     )
     result = json.loads(response["Body"].read())
+    with open(key+'.json', 'w') as f:
+        json.dump(result, f)
+    reslts_bucket_name = 'upload-images-detect-result'
+    bucket = s3.Bucket(reslts_bucket_name)
+    bucket.upload_file(key+'.json')
 
     return 200
