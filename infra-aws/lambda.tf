@@ -2,7 +2,7 @@
 # Lambda
 # =========================================
 
-data "archive_file" "upload-lambda-archive-file" {
+data "archive_file" "img-upload-lambda-archive-file" {
   type        = "zip"
   source_dir  = "./lambda/img-upload"
   output_path = "./lambda/img-upload.zip"

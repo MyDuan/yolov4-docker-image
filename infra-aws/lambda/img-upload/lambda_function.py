@@ -1,6 +1,8 @@
 import boto3
 import json
 
+ENDPOINT_NAME = "yolov4-model-endpoint"
+
 
 def handler(event, context):
 
@@ -22,10 +24,9 @@ def handler(event, context):
         Accept="image/jpeg",
     )
     result = json.loads(response["Body"].read())
-    with open(key+'.json', 'w') as f:
-        json.dump(result, f)
+    result_name = key.split('.')[0] + '.json'
     reslts_bucket_name = 'upload-images-detect-result'
-    bucket = s3.Bucket(reslts_bucket_name)
-    bucket.upload_file(key+'.json')
+    result_obj = s3.Object(reslts_bucket_name, result_name)
+    result_obj.put(Body=json.dumps(result))
 
     return 200

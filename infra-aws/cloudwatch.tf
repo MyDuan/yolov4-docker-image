@@ -25,7 +25,7 @@ resource "aws_cloudwatch_event_rule" "image-upload-event-rule" {
     ],
     "requestParameters": {
       "bucketName": [
-        "${aws_s3_bucket.images-data.bucket}"
+        "${aws_s3_bucket.upload-img-data.bucket}"
       ]
     }
   }

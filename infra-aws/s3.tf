@@ -15,9 +15,9 @@ resource "aws_s3_bucket" "yolov4-models" {
   }
 }
 
-resource "aws_s3_bucket" "images-data" {
+resource "aws_s3_bucket" "upload-img-data" {
   acl    = "private"
-  bucket = "images-data"
+  bucket = "upload-img-data"
 
   versioning {
     enabled = true

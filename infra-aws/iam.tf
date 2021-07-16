@@ -83,6 +83,24 @@ resource "aws_iam_policy" "img-upload-lambda-policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "WriteLogStreamsAndGroups",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:CreateLogGroup",
+        "logs:PutLogEvents",
+        "logs:PutMetricFilter",
+        "logs:PutRetentionPolicy"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+      "Sid": "SageMakerInvokeEndpoint",
+      "Effect": "Allow",
+      "Action": "sagemaker:InvokeEndpoint",
+      "Resource": "arn:aws:sagemaker:*:*:endpoint/*"
+    },
+    {
       "Sid": "GetS3data",
       "Effect": "Allow",
       "Action": [
