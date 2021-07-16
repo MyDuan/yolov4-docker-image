@@ -37,7 +37,7 @@ PATTERN
 
 resource "aws_cloudwatch_event_target" "image-upload-event-target" {
   target_id = "image-upload-event"
-  arn       = aws_lambda_function.image-upload-lambda.arn
+  arn       = aws_lambda_function.img-upload-lambda.arn
   rule      = aws_cloudwatch_event_rule.image-upload-event-rule.name
 
   input_transformer {
@@ -59,7 +59,7 @@ INPUT_TEMPLATE_EOF
 resource "aws_lambda_permission" "image-upload-lambda" {
    statement_id  = "AllowExecutionFromCloudWatch"
    action        = "lambda:InvokeFunction"
-   function_name = aws_lambda_function.image-upload-lambda.function_name
+   function_name = aws_lambda_function.img-upload-lambda.function_name
    principal     = "events.amazonaws.com"
    source_arn    = aws_cloudwatch_event_rule.image-upload-event-rule.arn
 }
