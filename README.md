@@ -13,7 +13,7 @@
 - open a new terminal
 - run `$ cd models/predict`
 - prepare your own test.jpg
-- run `$ . local_build_and_serve.sh test.jpg`
+- run `$ . local_predict_test.sh test.jpg`
 
 
 ### create sagemaker endpoint
