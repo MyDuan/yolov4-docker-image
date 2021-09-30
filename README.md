@@ -5,7 +5,7 @@
 - open a terminal
 - run `$ cd models/predict`
 - run `$ mkdir model`
-  - prepare your own yolov4-416.tflite model file
+  - prepare your own yolov4-416.tflite model file. Move it to this new model floder
       - you can see [here](https://github.com/hunglc007/tensorflow-yolov4-tflite#tensorflow-yolov4-tflite) to prepare it
       - you also can download it [here](https://drive.google.com/file/d/1w3s9ml_uiS51r07DrA9aJuwFoCfvfEIg/view?usp=sharing)
 - run `$ . local_build_and_serve.sh`
