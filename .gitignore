@@ -6,4 +6,3 @@
 *.tfstate.*
 
 models/predict/model/*
-models/predict/test.jpg
